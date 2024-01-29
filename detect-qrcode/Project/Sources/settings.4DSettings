@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><preferences stamp="3">
+<?xml version="1.0" encoding="UTF-8"?><preferences stamp="4">
 	<com.4d>
 		<web>
 			<standalone_server>
@@ -6,6 +6,7 @@
 				<options>
 					<cache use_4d_web_cache="false"/>
 				</options>
+				<log format="1" tokens=""/>
 			</standalone_server>
 		</web>
 	</com.4d>
