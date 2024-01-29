@@ -9,3 +9,7 @@ HTMLとORDAでQRコードリーダー
   *  [非同期APIを削除した](https://github.com/miyako/4d-example-detect-qrcode/blob/main/detect-qrcode/WebFolder/js/zbar-wasm.js)
 
 * `jsQR`もカメラで撮影した写真は無理だった・しかも巨大な画像で固まる
+
+### その他（試していない）
+
+https://github.com/nimiq/qr-scanner
