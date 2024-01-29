@@ -8,14 +8,30 @@
             </head>
     <body>
         <div class="col-auto">
+            <h1>BarcodeDetector</h1>
             <label for="fileInput1" class="visually-hidden"></label>
-            <input class="form-control" id="fileInput1" type="file" accept="image/*;capture=camera" />
+            <input class="form-control" id="fileInput1" type="file" accept="image/jpeg,image/png;capture=camera" />
         </div>
         <div class="col-auto">
             <label for="textValue1" class="visually-hidden"></label>
             <input type="text" class="form-control" id="textValue1" disabled />
         </div>
-        <button id="sendButton1" data-target="textValue1" type="button" class="btn btn-primary disabled">Send</button>
+        <div class="col-auto">
+            <button id="sendButton1" data-target="textValue1" type="button" class="btn btn-primary disabled">Send</button>
+        </div>
+        <div class="col-auto">
+            <hr />
+            <h1>jsQR</h1>
+            <label for="fileInput2" class="visually-hidden"></label>
+            <input class="form-control" id="fileInput2" type="file" accept="image/jpeg,image/png;capture=camera" />
+        </div>
+        <div class="col-auto">
+            <label for="textValue2" class="visually-hidden"></label>
+            <input type="text" class="form-control" id="textValue2" disabled />
+        </div>
+        <div class="col-auto">
+            <button id="sendButton2" data-target="textValue2" type="button" class="btn btn-warning disabled">Send</button>
+        </div>
         <script src="/js/jquery.js"></script>
         <script>
             var app = (function($){
@@ -30,6 +46,9 @@
                 const $textValue1 = $("#textValue1");
                 const $fileInput1 = $("#fileInput1");
                 const $sendButton1 = $("#sendButton1");
+                const $textValue2 = $("#textValue2");
+                const $fileInput2 = $("#fileInput2");
+                const $sendButton2 = $("#sendButton2");
                 var app = {
                     login:function(){
                         // Make a request for a user with a given ID
@@ -75,14 +94,28 @@
                     }
                 };
                 $sendButton1.on('click', function(e){
-                    debugger;
                     app.send($textValue1.val(), this.id, this.getAttribute('data-target'));
                 });
+                $sendButton2.on('click', function(e){
+                    app.send($textValue2.val(), this.id, this.getAttribute('data-target'));
+                });
+                
+                async function scanQRFromFile(file) {
+                  const img = new Image();
+                  img.src = URL.createObjectURL(file);
+                  await new Promise((resolve) => img.addEventListener("load", resolve));
+                  const canvas = document.createElement("canvas");
+                  canvas.width = img.naturalWidth;
+                  canvas.height = img.naturalHeight;
+                  const ctx = canvas.getContext("2d");
+                  ctx.imageSmoothingEnabled = false;
+                  ctx.drawImage(img, 0, 0);
+                  const imageData = ctx.getImageData(0, 0, img.naturalWidth, img.naturalHeight);
+                  return jsQR(imageData.data, img.naturalWidth, img.naturalHeight)?.data;
+                }
                 
                 $fileInput1.on('change', function(e){
-                    
                     $textValue1.val("");
-                    
                     if(this.files.length != 0) {
                         let source = this.files[0];
                         const detector = new BarcodeDetector({ formats: ['qr_code']});
@@ -97,14 +130,37 @@
                             }
                         })
                         .catch(function (error) {
-                            $textValue1.val("ERROR");
+                            $textValue1.val("ERROR!");
                             $sendButton1.addClass("disabled");
                         })
                         .finally(function () {
                             //
                         });
                     }
-                    
+                });
+                
+                $fileInput2.on('change', function(e){
+                    $textValue2.val("");
+                    if(this.files.length != 0) {
+                        let source = this.files[0];
+                        scanQRFromFile(source)
+                        .then(function (response) {
+                            if(response == null) {
+                                $textValue2.val("barcode not detected");
+                                $sendButton2.addClass("disabled");
+                            }else{
+                                $textValue2.val(response);
+                                $sendButton2.removeClass("disabled");
+                            }
+                        })
+                        .catch(function (error) {
+                            $textValue2.val("ERROR!");
+                            $sendButton2.addClass("disabled");
+                        })
+                        .finally(function () {
+                            //
+                        });
+                    }
                 });
                 
                 return app;
