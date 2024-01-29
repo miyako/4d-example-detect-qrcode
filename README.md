@@ -1,4 +1,4 @@
-# 4d-orda-qrcode
+# 4d-example-detect-qrcode
 HTMLとORDAでQRコードリーダー
 
 * ブラウザ標準のバーコード読み取りAPIはAndroidのみ
