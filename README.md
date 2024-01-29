@@ -8,3 +8,4 @@ HTMLとORDAでQRコードリーダー
   *  `.fetch()`で4Dが`application/wasm`の代わりに`application/octet-stream`を返すためにエラー
   *  [非同期APIを削除した](https://github.com/miyako/4d-example-detect-qrcode/blob/main/detect-qrcode/WebFolder/js/zbar-wasm.js)
 
+* `jsQR`もカメラで撮影した写真は無理だった・しかも巨大な画像で固まる
