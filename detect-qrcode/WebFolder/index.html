@@ -8,14 +8,14 @@
             </head>
     <body>
         <div class="col-auto">
-            <label for="fileInput" class="visually-hidden"></label>
-            <input class="form-control" id="fileInput" type="file" accept="image/*;capture=camera" />
+            <label for="fileInput1" class="visually-hidden"></label>
+            <input class="form-control" id="fileInput1" type="file" accept="image/*;capture=camera" />
         </div>
         <div class="col-auto">
-            <label for="textValue" class="visually-hidden"></label>
-            <input type="text" class="form-control" id="textValue" disabled />
+            <label for="textValue1" class="visually-hidden"></label>
+            <input type="text" class="form-control" id="textValue1" disabled />
         </div>
-        <button id="send" type="button" class="btn btn-primary disabled">Send</button>
+        <button id="sendButton1" data-target="textValue1" type="button" class="btn btn-primary disabled">Send</button>
         <script src="/js/jquery.js"></script>
         <script>
             var app = (function($){
@@ -27,6 +27,9 @@
                     'username-4D':credentials.username,
                     'password-4D':credentials.password
                 };
+                const $textValue1 = $("#textValue1");
+                const $fileInput1 = $("#fileInput1");
+                const $sendButton1 = $("#sendButton1");
                 var app = {
                     login:function(){
                         // Make a request for a user with a given ID
@@ -41,10 +44,10 @@
                             // always executed
                         });
                     },
-                    send:function(value){
-                        axios.post('/rest/$catalog/send', [value], {headers:headers})
+                    send:function(value, origin, target){
+                        axios.post('/rest/$catalog/send', [value, origin, target], {headers:headers})
                         .then(function (response) {
-                            $("#textValue").val(response.data.result.message);
+                            $('#'+response.data.result.target).val(response.data.result.message);
                             console.log(response);
                             app.logout();
                         })
@@ -71,13 +74,14 @@
                         const detector = new BarcodeDetector({ formats: ['qr_code'] });
                     }
                 };
-                $("#send").on('click', function(e){
-                    app.send($("#textValue").val());
+                $sendButton1.on('click', function(e){
+                    debugger;
+                    app.send($textValue1.val(), this.id, this.getAttribute('data-target'));
                 });
                 
-                $("#fileInput").on('change', function(e){
+                $fileInput1.on('change', function(e){
                     
-                    $("#textValue").val("");
+                    $textValue1.val("");
                     
                     if(this.files.length != 0) {
                         let source = this.files[0];
@@ -85,16 +89,16 @@
                         detector.detect(source)
                         .then(function (response) {
                             if(response.length > 0){
-                                $("#textValue").val(response[0].rawValue);
-                                $("#send").removeClass("disabled");
+                                $textValue1.val(response[0].rawValue);
+                                $sendButton1.removeClass("disabled");
                             }else{
-                                $("#textValue").val("barcode not detected");
-                                $("#send").addClass("disabled");
+                                $textValue1.val("barcode not detected");
+                                $sendButton1.addClass("disabled");
                             }
                         })
                         .catch(function (error) {
-                            $("#textValue").val("ERROR");
-                            $("#send").addClass("disabled");
+                            $textValue1.val("ERROR");
+                            $sendButton1.addClass("disabled");
                         })
                         .finally(function () {
                             //
@@ -110,6 +114,7 @@
         <script src="/js/axios.min.js"></script>
         <script src="/js/zbar-wasm.js"></script>
         <script src="/js/barcode-detector-polyfill.js"></script>
+        <script src="/js/jsQR.js"></script>
         <script>
             try {
                 window['BarcodeDetector'].getSupportedFormats()

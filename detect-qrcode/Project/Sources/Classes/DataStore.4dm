@@ -1,10 +1,8 @@
 Class extends DataStoreImplementation
 
-exposed Function send($value : Text) : Object
+exposed Function send($value : Text; $origin : Text; $target : Text) : Object
 	
-	TRACE:C157
-	
-	return {success: True:C214; message: "ありがとう"}
+	return {success: True:C214; message: "ありがとう"; origin: $origin; target: $target}
 	
 exposed Function logout() : Boolean
 	
