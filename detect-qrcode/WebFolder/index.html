@@ -32,6 +32,19 @@
         <div class="col-auto">
             <button id="sendButton2" data-target="textValue2" type="button" class="btn btn-warning disabled">Send</button>
         </div>
+        <div class="col-auto">
+            <hr />
+            <h1>Quagga</h1>
+            <label for="fileInput3" class="visually-hidden"></label>
+            <input class="form-control" id="fileInput3" type="file" accept="image/png;capture=camera" />
+        </div>
+        <div class="col-auto">
+            <label for="textValue3" class="visually-hidden"></label>
+            <input type="text" class="form-control" id="textValue3" disabled />
+        </div>
+        <div class="col-auto">
+            <button id="sendButton3" data-target="textValue3" type="button" class="btn btn-danger disabled">Send</button>
+        </div>        
         <script src="/js/jquery.js"></script>
         <script>
             var app = (function($){
@@ -49,6 +62,9 @@
                 const $textValue2 = $("#textValue2");
                 const $fileInput2 = $("#fileInput2");
                 const $sendButton2 = $("#sendButton2");
+                const $textValue3 = $("#textValue3");
+                const $fileInput3 = $("#fileInput3");
+                const $sendButton3 = $("#sendButton3");
                 var app = {
                     login:function(){
                         // Make a request for a user with a given ID
@@ -98,6 +114,9 @@
                 });
                 $sendButton2.on('click', function(e){
                     app.send($textValue2.val(), this.id, this.getAttribute('data-target'));
+                });
+                $sendButton3.on('click', function(e){
+                    app.send($textValue3.val(), this.id, this.getAttribute('data-target'));
                 });
                 
                 async function scanQRFromFile(file) {
@@ -162,6 +181,36 @@
                         });
                     }
                 });
+
+                $fileInput3.on('change', function(e){
+                    $textValue3.val("");
+                    if(this.files.length != 0) {
+                        let source = this.files[0];
+                        Quagga.decodeSingle({
+                            decoder: {
+                                readers: [{format: "code_128_reader", config: {}}] 
+                            },
+                            locate: true, 
+                            inputStream: {size: 800, singleChannel: false},
+                            locator: {patchSize: "medium", halfSample: true},
+                            src: URL.createObjectURL(source)
+                        }, function(result){
+                            if (result && result.codeResult) {
+                                $textValue3.val(result.codeResult.code);
+                                $sendButton3.removeClass("disabled");
+                            } else {
+                                $textValue3.val("barcode not detected");
+                                $sendButton3.addClass("disabled");
+                            }
+                        });
+                        Quagga.onProcessed(function(result) {
+                            debugger;
+                        });
+                        Quagga.onDetected(function(result) {
+                            debugger;
+                        });
+                    }
+                });
                 
                 return app;
             })(jQuery);
@@ -171,6 +220,7 @@
         <script src="/js/zbar-wasm.js"></script>
         <script src="/js/barcode-detector-polyfill.js"></script>
         <script src="/js/jsQR.js"></script>
+        <script src="/js/quagga.min.js"></script>
         <script>
             try {
                 window['BarcodeDetector'].getSupportedFormats()
